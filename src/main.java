@@ -6,11 +6,9 @@ import java.util.Random;
 import java.util.Scanner;
 
 /**
- * 
- */
-
-/**
  * 560 Project Group 2
+ * 
+ * Implementation of A* on a hexoginal board.
  * 
  * @author connorguy
  *
@@ -22,7 +20,6 @@ public class main
     final static int ROW_COUNT = 31;
     final static int COLUMN_COUNT = 15;
     final static int FINAL_INDEX = 8;
-    PathOfBoard pathObj = new PathOfBoard();
 
     /**
      * @param args
@@ -48,6 +45,13 @@ public class main
 
         // For Testing the fill of the board
         testCase();
+        
+        // Starting node is in the bottom left of the board
+        Node startingNode = board[30][0];
+        // Add the start to the list and then build path.
+        path.add(startingNode);
+        buildPath(startingNode);
+
 
     }
 
@@ -108,7 +112,8 @@ public class main
         int row = 0;
         for (int i = 0; i < input.length; i++)
         {
-            board[row][index] = new Node(row, index, input[i], i);
+            // Node(row, column, weight, index (starts at 1))
+            board[row][index] = new Node(row, index, input[i], i + 1);
             index = index + 2; // skip an index everytime
 
             // If we are at the end of the row then we need to reset row index and increment
@@ -125,6 +130,10 @@ public class main
         }
     }
 
+    /*
+     * Recursive method that checks a nodes neighbors and chooses the best next
+     * node.
+     */
     private static void buildPath(Node node)
     {
         // Check if we have reached the destination node (node index[8])
@@ -147,53 +156,36 @@ public class main
         Node previousNode = path.get(path.size() - 1);
         for (Node n : listPaths)
         {
+            if(min == null)
+                min = n;
+
             // If the nodes directionalWeight is smaller than the current min AND it isn't
             // the node we just went to.
-            if (n.getDirectionalWeight() < min.getDirectionalWeight() || min == null && !previousNode.isEqual(n))
+            if (n.getDirectionalWeight() < min.getDirectionalWeight() && min.getDirectionalWeight() != (-1)
+                    && !previousNode.isEqual(n))
                 min = n;
         }
         // Add the smallest path node
         path.add(min);
 
+        System.out.println(min.toString());
+
         // Recursively call till you find the top right node
         buildPath(min);
-    }
-
-    // Check all the sides of the hex and pick the route with the smallest weight.
-    private static void checkSides(int row, int column)
-    {
-        int numberOfSides = 6;
-        Node[] listPaths = new Node[numberOfSides];
-        // Going clockwise
-        listPaths[0] = getIndex(row + 2, column); // Up
-        listPaths[1] = getIndex(row + 1, column + 2); // Up Right
-        listPaths[2] = getIndex(row - 1, column + 2); // Down Right
-        listPaths[3] = getIndex(row - 2, column); // Down
-        listPaths[4] = getIndex(row - 1, column - 2); // Down Left
-        listPaths[5] = getIndex(row + 1, column - 2); // Up Left
-
-        int minNumber = 0;
-        int minIndex = 0;
-        for (int i = 0; i < numberOfSides; i++)
-        {
-            if (minNumber > listPaths[i].getWeight() && listPaths[i].getWeight() != (-1))
-            {
-                minNumber = listPaths[i].getWeight();
-                minIndex = i;
-            }
-        }
-
-        // Do a recursive call
     }
 
     // Gets index from the board while making sure it is in bounds.
     private static Node getIndex(int row, int column)
     {
-        if (row > ROW_COUNT)
+        if (row >= ROW_COUNT || column >= COLUMN_COUNT)
             return null;
-        if (column > COLUMN_COUNT)
+
+        try {
+            return board[row][column];
+        } catch(Exception e)
+        {
             return null;
-        return board[row][column];
+        }
     }
 
 }

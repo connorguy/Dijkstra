@@ -1,6 +1,9 @@
 
 public class Node
 {
+    final static int ROW_COUNT = 31;
+    final static int COLUMN_COUNT = 15;
+
     private int row;
     private int column;
     private int index;
@@ -19,8 +22,11 @@ public class Node
 
     private void setDistance()
     {
-        // Calculate distance from end point.
-        this.distance = (row * row) + (column * column);
+        // Calculate distance from end point via pythagorean theorem.
+        // Since the last node is top right we can always 
+        int normalizedXFromRight = (COLUMN_COUNT - 1) - column;
+        this.distance = (row * row) + (normalizedXFromRight * normalizedXFromRight);
+        this.distance = (int) Math.sqrt(this.distance); // Give a rounded number - should be ok.
     }
 
     public int getDistance()
@@ -50,6 +56,7 @@ public class Node
 
     public int getDirectionalWeight()
     {
+        directionalWeight = distance + weight;
         return directionalWeight;
     }
 
