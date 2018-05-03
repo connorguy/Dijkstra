@@ -8,10 +8,11 @@ public class Node implements Comparable<Node>
     private int column;
     private int index;
     private int weight;
-    private int distance; // Approximate euclidean distance from target as a heuristics.
-    private int directionalWeight; // The sum of weight + distance
+    // private int distance; // Approximate euclidean distance from target as a
+    // heuristics.
+    // private int directionalWeight; // The sum of weight + distance
     private Node previousNode; // Parent node path
-    private int costToNode; // The current known cost to the node
+    private Integer costToNode; // The current known cost to the node. Integer so we can set to null initially
 
     public Node(int row, int column, int weight, int index)
     {
@@ -19,17 +20,19 @@ public class Node implements Comparable<Node>
         this.column = column;
         this.weight = weight;
         this.index = index;
-        setDistance();
+        // setDistance();
+        costToNode = null;
     }
 
-    private void setDistance()
-    {
-        // Calculate distance from end point via pythagorean theorem.
-        // Since the last node is top right we can always 
-        int normalizedXFromRight = (COLUMN_COUNT - 1) - column;
-        this.distance = (row * row) + (normalizedXFromRight * normalizedXFromRight);
-        this.distance = (int) Math.sqrt(this.distance); // Give a rounded number - should be ok.
-    }
+    // private void setDistance()
+    // {
+    // // Calculate distance from end point via pythagorean theorem.
+    // // Since the last node is top right we can always
+    // int normalizedXFromRight = (COLUMN_COUNT - 1) - column;
+    // this.distance = (row * row) + (normalizedXFromRight * normalizedXFromRight);
+    // this.distance = (int) Math.sqrt(this.distance); // Give a rounded number -
+    // should be ok.
+    // }
 
     public int getRow()
     {
@@ -51,11 +54,11 @@ public class Node implements Comparable<Node>
         return index;
     }
 
-    public int getAvgWeight()
-    {
-        directionalWeight = distance + weight;
-        return directionalWeight;
-    }
+    // public int getAvgWeight()
+    // {
+    // directionalWeight = distance + weight;
+    // return directionalWeight;
+    // }
 
     public Node getPreviousNode()
     {
@@ -74,7 +77,11 @@ public class Node implements Comparable<Node>
 
     public void setCostToNode(int costToNode)
     {
-        this.costToNode = costToNode;
+        // Nodes with weight -1 can't be accessed
+        if (this.weight == -1)
+            this.costToNode = null;
+        else
+            this.costToNode = costToNode;
     }
 
     public boolean isEqual(Node comp)
@@ -87,13 +94,12 @@ public class Node implements Comparable<Node>
 
     public String toString()
     {
-        String node = String.format("[%d,%d] Index: [%d] Weight: %d Distance: %d", row, column, index, weight,
-                getAvgWeight());
+        String node = String.format("[%d,%d] Index: [%d] Weight: %d", row, column, index, weight);
         return node;
     }
 
     /**
-     * Implements comparable by looking at directionalWeight variable.
+     * Implements comparable by looking at weight variable.
      * 
      * @param other
      * @return
@@ -101,9 +107,11 @@ public class Node implements Comparable<Node>
     @Override
     public int compareTo(Node other)
     {
-        if (this.directionalWeight == other.directionalWeight)
+        if (this.weight == -1)
+            return 1; // not sure if this is what I need
+        if (this.weight == other.weight)
             return 0;
-        if (this.directionalWeight > other.directionalWeight)
+        if (this.weight > other.weight)
             return 1;
         else
             return -1;

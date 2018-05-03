@@ -8,7 +8,7 @@ import java.util.Scanner;
 /**
  * 560 Project Group 2
  * 
- * Implementation of A* on a hexoginal board.
+ * Implementation of Dijkstra's on a hexagonal board.
  * 
  * @author connorguy
  *
@@ -184,20 +184,44 @@ public class main
 
     }
 
+    /**
+     * Creates a node array of all neighbors of odd indexed nodes based around the
+     * hexagonal layout of the board.
+     * 
+     * @param node
+     * @return
+     */
     private Node[] getOddNeighbors(Node node)
     {
         final int numberOfNeighbors = 6;
         Node[] neighbors = new Node[numberOfNeighbors];
-        // TODO
-        return null;
+        neighbors[0] = board[node.getRow() - 1][node.getColumn()];
+        neighbors[1] = board[node.getRow() - 1][node.getColumn() - 1];
+        neighbors[2] = board[node.getRow() - 1][node.getColumn() + 1];
+        neighbors[3] = board[node.getRow()][node.getColumn() + 1];
+        neighbors[4] = board[node.getRow()][node.getColumn() - 1];
+        neighbors[5] = board[node.getRow() + 1][node.getColumn()];
+        return neighbors;
     }
 
+    /**
+     * Creates a node array of all neighbors of even indexed nodes based around the
+     * hexagonal layout of the board.
+     * 
+     * @param node
+     * @return
+     */
     private Node[] getEvenNeighbors(Node node)
     {
         final int numberOfNeighbors = 6;
         Node[] neighbors = new Node[numberOfNeighbors];
-        // TODO
-        return null;
+        neighbors[0] = board[node.getRow() - 1][node.getColumn()];
+        neighbors[1] = board[node.getRow()][node.getColumn() + 1];
+        neighbors[2] = board[node.getRow()][node.getColumn() - 1];
+        neighbors[3] = board[node.getRow() + 1][node.getColumn()];
+        neighbors[4] = board[node.getRow() + 1][node.getColumn() - 1];
+        neighbors[5] = board[node.getRow() + 1][node.getColumn() + 1];
+        return neighbors;
     }
 
     // Gets index from the board while making sure it is in bounds.
