@@ -17,8 +17,8 @@ public class main
 {
     static Node[][] board;
     static List<Node> path;
-    final static int ROW_COUNT = 31;
-    final static int COLUMN_COUNT = 15;
+    final static int ROW_SIZE = 16;
+    final static int COLUMN_SIZE = 15;
     final static int FINAL_INDEX = 8;
 
     /**
@@ -27,7 +27,7 @@ public class main
     public static void main(String[] args)
     {
         // Array 31 rows, 15 columns
-        board = new Node[ROW_COUNT][COLUMN_COUNT];
+        board = new Node[ROW_SIZE][COLUMN_SIZE];
         path = new ArrayList<Node>();
 
         // int[] input = getFileInput();
@@ -36,9 +36,9 @@ public class main
         int[] input = new int[233];
         for (int i = 0; i < 233; i++)
         {
-            if (i % (rand.nextInt(9) + 1) == 0)
-                input[i] = -1;
-            else
+            // if (i % (rand.nextInt(9) + 1) == 0)
+            // input[i] = -1;
+            // else
                 input[i] = rand.nextInt(50) + 1;
         }
         fillHexArray(input);
@@ -47,10 +47,10 @@ public class main
         testCase();
         
         // Starting node is in the bottom left of the board
-        Node startingNode = board[30][0];
+        Node startingNode = board[15][0];
         // Add the start to the list and then build path.
-        path.add(startingNode);
-        buildPath(startingNode);
+        // path.add(startingNode);
+        // buildPath(startingNode);
 
 
     }
@@ -59,15 +59,15 @@ public class main
     {
         // For Testing the fill of the board
         int total = 0;
-        for (int x = 0; x < ROW_COUNT; x++)
+        for (int x = 0; x < ROW_SIZE; x++)
         {
-            for (int y = 0; y < COLUMN_COUNT; y++)
+            for (int y = 0; y < COLUMN_SIZE; y++)
             {
                 if (board[x][y] == null)
                     System.out.print(" + ");
                 else
                 {
-                    System.out.print(board[x][y].getWeight() + " ");
+                    System.out.print(board[x][y].getIndex() + " ");
                     total++;
                 }
             }
@@ -108,25 +108,55 @@ public class main
     // Fills hex array with the input from the file that was parsed.
     private static void fillHexArray(int[] input)
     {
-        int index = 0;
-        int row = 0;
-        for (int i = 0; i < input.length; i++)
-        {
-            // Node(row, column, weight, index (starts at 1))
-            board[row][index] = new Node(row, index, input[i], i + 1);
-            index = index + 2; // skip an index everytime
+        int elementsSize = input.length; // Might want to check this against the expected value.
 
-            // If we are at the end of the row then we need to reset row index and increment
-            // the row.
-            if (index >= 15)
+        // Keep track of where we are on the board while we fill it
+        int rowIndex = 0;
+        int columnIndex = 0;
+
+        // Fill the first row - which will be every other index
+        for (int i = 0; i < 8; i++)
+        {
+            board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i);
+            columnIndex = columnIndex + 2;
+        }
+
+        // Go through input and fill the board - see docs on board layout
+        int evenOddSwitchCount = 1;
+        rowIndex = 1;
+        columnIndex = 1;
+        for (int i = 8; i < elementsSize; i++)
+        {
+            // Row column indexing rules
+            if (columnIndex > COLUMN_SIZE - 2 && evenOddSwitchCount % 2 != 0) // Odd rule
             {
-                row++;
-                // Odd rows index will start at 1.
-                if (row % 2 == 0)
-                    index = 0;
-                else
-                    index = 1;
+                // Case where we filled the odd indexes and now need to switch to even.
+                evenOddSwitchCount++;
+                columnIndex = 0;
             }
+            else if (columnIndex > COLUMN_SIZE - 1 && evenOddSwitchCount % 2 == 0) // Even rule
+            {
+                // Case where we filled even and now we need to increase the row and switch to
+                // odd indexes
+                evenOddSwitchCount++;
+                columnIndex = 1;
+                rowIndex++;
+            }
+            
+            
+            if (evenOddSwitchCount % 2 != 0)
+            {
+                // fill spaces on the odd indexes
+                board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i);
+                columnIndex = columnIndex + 2;
+
+            } else
+            {
+                // fill even spaces
+                board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i);
+                columnIndex = columnIndex + 2;
+            }
+            
         }
     }
 
@@ -156,14 +186,18 @@ public class main
         Node previousNode = path.get(path.size() - 1);
         for (Node n : listPaths)
         {
-            if(min == null)
-                min = n;
 
             // If the nodes directionalWeight is smaller than the current min AND it isn't
             // the node we just went to.
-            if (n.getDirectionalWeight() < min.getDirectionalWeight() && min.getDirectionalWeight() != (-1)
-                    && !previousNode.isEqual(n))
-                min = n;
+            if (n != null)
+            {
+                if (min == null)
+                    min = n;
+
+                if (n.getAvgWeight() < min.getAvgWeight() && min.getAvgWeight() != (-1)
+                        && !previousNode.isEqual(n))
+                    min = n;
+            }
         }
         // Add the smallest path node
         path.add(min);
@@ -177,7 +211,7 @@ public class main
     // Gets index from the board while making sure it is in bounds.
     private static Node getIndex(int row, int column)
     {
-        if (row >= ROW_COUNT || column >= COLUMN_COUNT)
+        if (row >= ROW_SIZE || column >= COLUMN_SIZE)
             return null;
 
         try {

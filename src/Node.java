@@ -1,8 +1,8 @@
 
 public class Node
 {
-    final static int ROW_COUNT = 31;
-    final static int COLUMN_COUNT = 15;
+    final static int ROW_COUNT = 15;
+    final static int COLUMN_COUNT = 14;
 
     private int row;
     private int column;
@@ -29,11 +29,6 @@ public class Node
         this.distance = (int) Math.sqrt(this.distance); // Give a rounded number - should be ok.
     }
 
-    public int getDistance()
-    {
-        return distance;
-    }
-
     public int getRow()
     {
         return row;
@@ -54,7 +49,7 @@ public class Node
         return index;
     }
 
-    public int getDirectionalWeight()
+    public int getAvgWeight()
     {
         directionalWeight = distance + weight;
         return directionalWeight;
@@ -62,11 +57,7 @@ public class Node
 
     public boolean isEqual(Node comp)
     {
-        if (comp.column != column)
-            return false;
-        if (comp.row != row)
-            return false;
-        if (comp.weight != weight)
+        if (comp.index != index)
             return false;
         else
             return true;
@@ -74,8 +65,8 @@ public class Node
 
     public String toString()
     {
-        String node = String.format("Index: [%d,%d]/[%d] Weight: %d Distance: %d", row, column, index, weight,
-                distance);
+        String node = String.format("[%d,%d] Index: [%d] Weight: %d Distance: %d", row, column, index, weight,
+                getAvgWeight());
         return node;
     }
 }
