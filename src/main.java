@@ -105,7 +105,17 @@ public class main
         return input;
     }
 
-    // Fills hex array with the input from the file that was parsed.
+    /**
+     * Fills hex array with the input from the file that was parsed. See docs for
+     * exact details.
+     * 
+     * Fills first row with every other index. Subsequent rows are filled on odd
+     * indexes first then on even indexes in order of i. When creating new nodes,
+     * input is indexed from i but the nodes internal index variable is set to i+1
+     * because that is how we have to reference it when printing out the path list.
+     * 
+     * @param input
+     */
     private static void fillHexArray(int[] input)
     {
         int elementsSize = input.length; // Might want to check this against the expected value.
@@ -117,14 +127,14 @@ public class main
         // Fill the first row - which will be every other index
         for (int i = 0; i < 8; i++)
         {
-            board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i);
+            board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i + 1);
             columnIndex = columnIndex + 2;
         }
 
         // Go through input and fill the board - see docs on board layout
-        int evenOddSwitchCount = 1;
+        int evenOddSwitchCount = 1; // Used to tell whether filling odd or even index
         rowIndex = 1;
-        columnIndex = 1;
+        columnIndex = 1; // Fill starts at i = 8 and on odd column.
         for (int i = 8; i < elementsSize; i++)
         {
             // Row column indexing rules
@@ -147,13 +157,13 @@ public class main
             if (evenOddSwitchCount % 2 != 0)
             {
                 // fill spaces on the odd indexes
-                board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i);
+                board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i + 1);
                 columnIndex = columnIndex + 2;
 
             } else
             {
                 // fill even spaces
-                board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i);
+                board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i + 1);
                 columnIndex = columnIndex + 2;
             }
             
