@@ -49,8 +49,8 @@ public class main
         // Starting node is in the bottom left of the board
         Node startingNode = board[15][0];
         // Add the start to the list and then build path.
-        // path.add(startingNode);
-        // buildPath(startingNode);
+        path.add(startingNode);
+        buildPath(startingNode);
 
 
     }
@@ -170,9 +170,12 @@ public class main
         }
     }
 
-    /*
+
+    /**
      * Recursive method that checks a nodes neighbors and chooses the best next
      * node.
+     * 
+     * @param node
      */
     private static void buildPath(Node node)
     {
@@ -180,42 +183,15 @@ public class main
         if (node.getIndex() == FINAL_INDEX)
             return;
 
-        int numberOfSides = 6;
-        Node[] listPaths = new Node[numberOfSides];
-        // Get neighbor nodes going clockwise
-        listPaths[0] = getIndex(node.getRow() + 2, node.getColumn()); // Up
-        listPaths[1] = getIndex(node.getRow() + 1, node.getColumn() + 2); // Up Right
-        listPaths[2] = getIndex(node.getRow() - 1, node.getColumn() + 2); // Down Right
-        listPaths[3] = getIndex(node.getRow() - 2, node.getColumn()); // Down
-        listPaths[4] = getIndex(node.getRow() - 1, node.getColumn() - 2); // Down Left
-        listPaths[5] = getIndex(node.getRow() + 1, node.getColumn() - 2); // Up Left
+    }
 
-        // Check which neighbor node has the lowest cost.
-        // Exclude previous node.
-        Node min = null;
-        Node previousNode = path.get(path.size() - 1);
-        for (Node n : listPaths)
-        {
-
-            // If the nodes directionalWeight is smaller than the current min AND it isn't
-            // the node we just went to.
-            if (n != null)
-            {
-                if (min == null)
-                    min = n;
-
-                if (n.getAvgWeight() < min.getAvgWeight() && min.getAvgWeight() != (-1)
-                        && !previousNode.isEqual(n))
-                    min = n;
-            }
-        }
-        // Add the smallest path node
-        path.add(min);
-
-        System.out.println(min.toString());
-
-        // Recursively call till you find the top right node
-        buildPath(min);
+    private Node[] getOddNeighbors(Node node)
+    {
+        final int numberOfNeighbors = 6;
+        Node[] neighbors = new Node[numberOfNeighbors];
+        
+        
+        return null;
     }
 
     // Gets index from the board while making sure it is in bounds.
@@ -233,3 +209,4 @@ public class main
     }
 
 }
+

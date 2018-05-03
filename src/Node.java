@@ -1,5 +1,5 @@
 
-public class Node
+public class Node implements Comparable<Node>
 {
     final static int ROW_COUNT = 15;
     final static int COLUMN_COUNT = 14;
@@ -10,6 +10,7 @@ public class Node
     private int weight;
     private int distance;
     private int directionalWeight;
+    private Node previousNode;
 
     public Node(int row, int column, int weight, int index)
     {
@@ -55,6 +56,16 @@ public class Node
         return directionalWeight;
     }
 
+    public Node getPreviousNode()
+    {
+        return previousNode;
+    }
+
+    public void setPreviousNode(Node previousNode)
+    {
+        this.previousNode = previousNode;
+    }
+
     public boolean isEqual(Node comp)
     {
         if (comp.index != index)
@@ -69,4 +80,22 @@ public class Node
                 getAvgWeight());
         return node;
     }
+
+    /**
+     * Implements comparable by looking at directionalWeight variable.
+     * 
+     * @param other
+     * @return
+     */
+    @Override
+    public int compareTo(Node other)
+    {
+        if (this.directionalWeight == other.directionalWeight)
+            return 0;
+        if (this.directionalWeight > other.directionalWeight)
+            return 1;
+        else
+            return -1;
+    }
+
 }
