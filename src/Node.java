@@ -8,9 +8,10 @@ public class Node implements Comparable<Node>
     private int column;
     private int index;
     private int weight;
-    private int distance;
-    private int directionalWeight;
-    private Node previousNode;
+    private int distance; // Approximate euclidean distance from target as a heuristics.
+    private int directionalWeight; // The sum of weight + distance
+    private Node previousNode; // Parent node path
+    private int costToNode; // The current known cost to the node
 
     public Node(int row, int column, int weight, int index)
     {
@@ -64,6 +65,16 @@ public class Node implements Comparable<Node>
     public void setPreviousNode(Node previousNode)
     {
         this.previousNode = previousNode;
+    }
+
+    public int getCostToNode()
+    {
+        return costToNode;
+    }
+
+    public void setCostToNode(int costToNode)
+    {
+        this.costToNode = costToNode;
     }
 
     public boolean isEqual(Node comp)

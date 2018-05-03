@@ -30,21 +30,20 @@ public class main
         board = new Node[ROW_SIZE][COLUMN_SIZE];
         path = new ArrayList<Node>();
 
-        // int[] input = getFileInput();
-        // For testing
+        // int[] input = getFileInput(); REMOVE COMMENTS FOR REAL FILE DATA
+
+        // ----------------(For testing)----------------
         Random rand = new Random();
         int[] input = new int[233];
-        for (int i = 0; i < 233; i++)
+        for (int i = 0; i < 233; i++) // fill array with random data for tests
         {
-            // if (i % (rand.nextInt(9) + 1) == 0)
-            // input[i] = -1;
-            // else
-                input[i] = rand.nextInt(50) + 1;
+            input[i] = rand.nextInt(50) + 1;
         }
         fillHexArray(input);
 
         // For Testing the fill of the board
         testCase();
+        // ----------------(For testing)----------------
         
         // Starting node is in the bottom left of the board
         Node startingNode = board[15][0];
@@ -189,8 +188,15 @@ public class main
     {
         final int numberOfNeighbors = 6;
         Node[] neighbors = new Node[numberOfNeighbors];
-        
-        
+        // TODO
+        return null;
+    }
+
+    private Node[] getEvenNeighbors(Node node)
+    {
+        final int numberOfNeighbors = 6;
+        Node[] neighbors = new Node[numberOfNeighbors];
+        // TODO
         return null;
     }
 
