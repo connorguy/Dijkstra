@@ -1,4 +1,3 @@
-
 public class Node implements Comparable<Node>
 {
     final static int ROW_COUNT = 15;
@@ -107,8 +106,6 @@ public class Node implements Comparable<Node>
     @Override
     public int compareTo(Node other)
     {
-        if (this.weight == -1)
-            return 1; // not sure if this is what I need
         if (this.weight == other.weight)
             return 0;
         if (this.weight > other.weight)
@@ -116,5 +113,4 @@ public class Node implements Comparable<Node>
         else
             return -1;
     }
-
 }

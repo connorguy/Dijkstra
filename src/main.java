@@ -1,13 +1,13 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Scanner;
 
 /**
- * 560 Project Group 2
- * 
  * Implementation of Dijkstra's on a hexagonal board.
  * 
  * @author connorguy
@@ -38,6 +38,8 @@ public class main
         for (int i = 0; i < 233; i++) // fill array with random data for tests
         {
             input[i] = rand.nextInt(50) + 1;
+            // if (i % 3 == 0)
+            // input[i] = -1;
         }
         fillHexArray(input);
 
@@ -46,10 +48,10 @@ public class main
         // ----------------(For testing)----------------
         
         // Starting node is in the bottom left of the board
-        Node startingNode = board[15][0];
-        // Add the start to the list and then build path.
-        path.add(startingNode);
-        buildPath(startingNode);
+        // Node startingNode = board[15][0];
+        // // Add the start to the list and then build path.
+        // path.add(startingNode);
+        // buildPath(startingNode);
 
 
     }
@@ -112,6 +114,8 @@ public class main
      * indexes first then on even indexes in order of i. When creating new nodes,
      * input is indexed from i but the nodes internal index variable is set to i+1
      * because that is how we have to reference it when printing out the path list.
+     * Indexes that would be -1 are set to null so they cannot be accessed in the
+     * search.
      * 
      * @param input
      */
@@ -126,7 +130,10 @@ public class main
         // Fill the first row - which will be every other index
         for (int i = 0; i < 8; i++)
         {
-            board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i + 1);
+            if (input[i] == -1)
+                board[rowIndex][columnIndex] = null;
+            else
+                board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i + 1);
             columnIndex = columnIndex + 2;
         }
 
@@ -156,13 +163,19 @@ public class main
             if (evenOddSwitchCount % 2 != 0)
             {
                 // fill spaces on the odd indexes
-                board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i + 1);
+                if (input[i] == -1)
+                    board[rowIndex][columnIndex] = null;
+                else
+                    board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i + 1);
                 columnIndex = columnIndex + 2;
 
             } else
             {
                 // fill even spaces
-                board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i + 1);
+                if (input[i] == -1)
+                    board[rowIndex][columnIndex] = null;
+                else
+                    board[rowIndex][columnIndex] = new Node(rowIndex, columnIndex, input[i], i + 1);
                 columnIndex = columnIndex + 2;
             }
             
@@ -176,10 +189,14 @@ public class main
      * 
      * @param node
      */
-    private static void buildPath(Node node)
+    private static void buildPath(Node startNode)
     {
+        // Create a priority que for open node list
+        Comparator<Node> nodeCompare = new NodeComparator();
+        PriorityQueue<Node> openNodes = new PriorityQueue<Node>(20, nodeCompare);
+
         // Check if we have reached the destination node (node index[8])
-        if (node.getIndex() == FINAL_INDEX)
+        if (startNode.getIndex() == FINAL_INDEX)
             return;
 
     }
