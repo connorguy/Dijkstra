@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -27,6 +26,9 @@ public class main
     /**
      * @param args
      */
+    /**
+     * @param args
+     */
     public static void main(String[] args)
     {
         // Array 31 rows, 15 columns that contain our organized nodes
@@ -37,17 +39,17 @@ public class main
         nodeCompare = new NodeComparator();
         openNodes = new PriorityQueue<Node>(233, nodeCompare);
 
-        // int[] input = getFileInput(); REMOVE COMMENTS FOR REAL FILE DATA
+        int[] input = getFileInput();
 
         // ----------------(For testing)----------------
-        Random rand = new Random();
-        int[] input = new int[233];
-        for (int i = 0; i < 233; i++) // fill array with random data for tests
-        {
-            input[i] = rand.nextInt(50) + 1;
-            // if (i % 3 == 0)
-            // input[i] = -1;
-        }
+        // Random rand = new Random();
+        // int[] input = new int[233];
+        // for (int i = 0; i < 233; i++) // fill array with random data for tests
+        // {
+        // input[i] = rand.nextInt(50) + 1;
+        // // if (i % 3 == 0)
+        // // input[i] = -1;
+        // }
         fillHexArray(input);
 
         // For Testing the fill of the board
@@ -77,7 +79,7 @@ public class main
             for (int y = 0; y < COLUMN_SIZE; y++)
             {
                 if (board[x][y] == null)
-                    System.out.print(" + ");
+                    System.out.print(" nu ");
                 else
                 {
                     System.out.print(board[x][y].getWeight() + " ");
@@ -96,26 +98,41 @@ public class main
         Scanner scanner = null;
         try
         {
-            scanner = new Scanner(new File("test.txt"));
+            File testCase = new File("src/test");
+            scanner = new Scanner(testCase);
         } catch (FileNotFoundException e)
         {
             // Bad Bad Not Good - great band
             e.printStackTrace();
         }
 
-        int[] input = new int[233];
-        int i = 0;
-        while (scanner.hasNextInt() || i == 232)
+        int[] input = new int[466];
+        int arrayIndex = 0;
+        // For whatever reason I can't get my reader to skip the index value - so read
+        // the whole damn thing to an array.
+        while (scanner.hasNextInt())
         {
-            // The text is in the format <index weight>
-            // So need to skip every other input
-            if (i % 2 == 0)
-            {
-                continue;
-            }
-            input[i++] = scanner.nextInt();
+            if (arrayIndex == 466)
+                break;
+
+            input[arrayIndex++] = scanner.nextInt();
         }
-        return input;
+
+        // Size down the input to only contain the values we want
+        int[] weights = new int[233];
+        arrayIndex = 0;
+        int actualCount = 0;
+        for (int i : input)
+        {
+            // Skip even indexes - weights are on odd.
+            if (actualCount % 2 != 0)
+            {
+                weights[arrayIndex++] = i;
+            }
+            actualCount++;
+        }
+
+        return weights;
     }
 
     /**
@@ -194,6 +211,12 @@ public class main
         }
     }
 
+    /**
+     * Starting at the given end node we work our way back and add up our total
+     * weight.
+     * 
+     * @param endNode
+     */
     private static void printPath(Node endNode)
     {
         if (endNode == null)
@@ -209,11 +232,14 @@ public class main
             System.out.println(pathNode.getIndex() + " ");
             // Add this nodes weight to the total weight. I THINK THIS CAN JUST BE OUR END
             // NODE DISTANCE
-            totalWeight = totalWeight + pathNode.getWeight();
+            // totalWeight = totalWeight + pathNode.getWeight();
             pathNode = pathNode.getPreviousNode();
         }
+        totalWeight = pathNode.getWeight() + endNode.getCostToNode();
+        System.out.println(pathNode.getIndex());
         System.out.println("Total weight: " + totalWeight);
     }
+
 
     /**
      * Starting from the node provided, adds all unvisited nodes to an openNode
@@ -237,6 +263,7 @@ public class main
         }
 
     }
+    
 
     /**
      * Gets the neighbor node, calls either oddNeighbors or evenDepending. Call this
