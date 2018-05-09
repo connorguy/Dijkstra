@@ -56,11 +56,16 @@ public class main
         
         // Starting node is in the bottom left of the board
         Node startingNode = board[15][0];
+        startingNode.setVisited(true);
+        startingNode.setCostToNode(0);
         // Add the start to the list and then build path.
         buildPath(startingNode);
 
+        // Using the top right index as our end spot print out our path from the start.
+        Node endNode = board[0][14];
+        printPath(endNode);
 
-
+        // We out.
     }
 
     private static void testCase()
@@ -189,11 +194,32 @@ public class main
         }
     }
 
+    private static void printPath(Node endNode)
+    {
+        if (endNode == null)
+        {
+            System.out.println("Not a valid node to navigate to.");
+            return;
+        }
+        Node pathNode = endNode;
+        int totalWeight = 0;
+        while (pathNode.getPreviousNode() != null)
+        {
+            // print the index we are at.
+            System.out.println(pathNode.getIndex() + " ");
+            // Add this nodes weight to the total weight. I THINK THIS CAN JUST BE OUR END
+            // NODE DISTANCE
+            totalWeight = totalWeight + pathNode.getWeight();
+            pathNode = pathNode.getPreviousNode();
+        }
+        System.out.println("Total weight: " + totalWeight);
+    }
 
     /**
-     * Adds all unvisited nodes to an openNode queue. Pops the smallest node
-     * distance off the queue and calls a check to all its neighbors. Once a node
-     * gets popped from the queue we add it to a closedNodes list.
+     * Starting from the node provided, adds all unvisited nodes to an openNode
+     * queue. Pops the smallest node distance off the queue and calls a check to all
+     * its neighbors. Once a node gets popped from the queue we add it to a
+     * closedNodes list.
      * 
      * @param node
      */

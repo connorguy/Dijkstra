@@ -23,6 +23,7 @@ public class Node implements Comparable<Node>
         // setDistance();
         costToNode = 0;
         visited = false;
+        previousNode = null;
     }
 
     // private void setDistance()
