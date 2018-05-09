@@ -16,19 +16,26 @@ import java.util.Scanner;
 public class main
 {
     static Node[][] board;
-    static List<Node> path;
+    static List<Node> closedNodes;
+    static Comparator<Node> nodeCompare;
+    static PriorityQueue<Node> openNodes;
     final static int ROW_SIZE = 16;
     final static int COLUMN_SIZE = 15;
     final static int FINAL_INDEX = 8;
+
 
     /**
      * @param args
      */
     public static void main(String[] args)
     {
-        // Array 31 rows, 15 columns
+        // Array 31 rows, 15 columns that contain our organized nodes
         board = new Node[ROW_SIZE][COLUMN_SIZE];
-        path = new ArrayList<Node>();
+        // List for the nodes that have been fully checked
+        closedNodes = new ArrayList<Node>();
+        // Create a priority que for open node list
+        nodeCompare = new NodeComparator();
+        openNodes = new PriorityQueue<Node>(233, nodeCompare);
 
         // int[] input = getFileInput(); REMOVE COMMENTS FOR REAL FILE DATA
 
@@ -48,10 +55,10 @@ public class main
         // ----------------(For testing)----------------
         
         // Starting node is in the bottom left of the board
-        // Node startingNode = board[15][0];
-        // // Add the start to the list and then build path.
-        // path.add(startingNode);
-        // buildPath(startingNode);
+        Node startingNode = board[15][0];
+        // Add the start to the list and then build path.
+        buildPath(startingNode);
+
 
 
     }
@@ -68,7 +75,7 @@ public class main
                     System.out.print(" + ");
                 else
                 {
-                    System.out.print(board[x][y].getIndex() + " ");
+                    System.out.print(board[x][y].getWeight() + " ");
                     total++;
                 }
             }
@@ -184,61 +191,117 @@ public class main
 
 
     /**
-     * Recursive method that checks a nodes neighbors and chooses the best next
-     * node.
+     * Adds all unvisited nodes to an openNode queue. Pops the smallest node
+     * distance off the queue and calls a check to all its neighbors. Once a node
+     * gets popped from the queue we add it to a closedNodes list.
      * 
      * @param node
      */
     private static void buildPath(Node startNode)
     {
-        // Create a priority que for open node list
-        Comparator<Node> nodeCompare = new NodeComparator();
-        PriorityQueue<Node> openNodes = new PriorityQueue<Node>(20, nodeCompare);
+        // Add our starting node to the queue to kick things off. Bottom left.
+        openNodes.add(startNode);
 
-        // Check if we have reached the destination node (node index[8])
-        if (startNode.getIndex() == FINAL_INDEX)
+        // While we have a non-accessed end (this is wrong but a start) continue.
+        while (!openNodes.isEmpty())
+        {
+            Node finishedNode = openNodes.poll();
+            checkNeighbors(finishedNode);
+            closedNodes.add(finishedNode);
+        }
+
+    }
+
+    /**
+     * Gets the neighbor node, calls either oddNeighbors or evenDepending. Call this
+     * so we don't have to do the odd/even check elsewhere.
+     * 
+     * @param node
+     * @return
+     */
+    private static void checkNeighbors(Node node)
+    {
+        if (node.getColumn() % 2 == 0)
+        {
+            getEvenNeighbors(node);
+        } else
+        {
+            getOddNeighbors(node);
+        }
+    }
+
+    /**
+     * Calls the nodeCheck method on all neighbors of odd indexed nodes based around
+     * the hexagonal layout of the board.
+     * 
+     * @param node
+     * @return
+     */
+    private static void getOddNeighbors(Node node)
+    {
+        checkNode(getIndex(node.getRow() - 1, node.getColumn()), node);
+        checkNode(getIndex(node.getRow() - 1, node.getColumn() - 1), node);
+        checkNode(getIndex(node.getRow() - 1, node.getColumn() + 1), node);
+        checkNode(getIndex(node.getRow(), node.getColumn() + 1), node);
+        checkNode(getIndex(node.getRow(), node.getColumn() - 1), node);
+        checkNode(getIndex(node.getRow() + 1, node.getColumn()), node);
+    }
+
+    /**
+     * Calls the nodeCheck method on all neighbors of even indexed nodes based
+     * around the hexagonal layout of the board.
+     * 
+     * @param node
+     * @return
+     */
+    private static void getEvenNeighbors(Node node)
+    {
+        checkNode(getIndex(node.getRow() - 1, node.getColumn()), node);
+        checkNode(getIndex(node.getRow(), node.getColumn() + 1), node);
+        checkNode(getIndex(node.getRow(), node.getColumn() - 1), node);
+        checkNode(getIndex(node.getRow() + 1, node.getColumn()), node);
+        checkNode(getIndex(node.getRow() + 1, node.getColumn() - 1), node);
+        checkNode(getIndex(node.getRow() + 1, node.getColumn() + 1), node);
+    }
+
+    /**
+     * Checks the given node against the previous node and either sets a new smaller
+     * cost to node if the node has already been visited, or if the node hasn't been
+     * visited sets the now known cost to the node, marks it as visited, and adds it
+     * to the open nodes queue.
+     * 
+     * @param node
+     * @param previous
+     */
+    private static void checkNode(Node node, Node previous)
+    {
+        // Insure we don't for any reason add null nodes.
+        if (node == null)
+            return;
+        // Don't add nodes we cannot access
+        if (node.getWeight() == -1)
             return;
 
-    }
+        // Get the new distance to the node based around the previous.
+        int newDistance = node.getWeight() + previous.getCostToNode();
+        // if the node has been visited but we need to set a new lower distance cost
+        // value
+        if (node.isVisited() && node.getCostToNode() > newDistance)
+        {
+            node.setCostToNode(newDistance);
+            node.setPreviousNode(previous);
+            return;
+        }
+        // if it hasn't been visited set parameters and add to the queue.
+        if (!node.isVisited())
+        {
+            node.setCostToNode(newDistance);
+            node.setPreviousNode(previous);
+            node.setVisited(true);
+            openNodes.add(node);
+            return;
+        }
 
-    /**
-     * Creates a node array of all neighbors of odd indexed nodes based around the
-     * hexagonal layout of the board.
-     * 
-     * @param node
-     * @return
-     */
-    private Node[] getOddNeighbors(Node node)
-    {
-        final int numberOfNeighbors = 6;
-        Node[] neighbors = new Node[numberOfNeighbors];
-        neighbors[0] = board[node.getRow() - 1][node.getColumn()];
-        neighbors[1] = board[node.getRow() - 1][node.getColumn() - 1];
-        neighbors[2] = board[node.getRow() - 1][node.getColumn() + 1];
-        neighbors[3] = board[node.getRow()][node.getColumn() + 1];
-        neighbors[4] = board[node.getRow()][node.getColumn() - 1];
-        neighbors[5] = board[node.getRow() + 1][node.getColumn()];
-        return neighbors;
-    }
-
-    /**
-     * Creates a node array of all neighbors of even indexed nodes based around the
-     * hexagonal layout of the board.
-     * 
-     * @param node
-     * @return
-     */
-    private Node[] getEvenNeighbors(Node node)
-    {
-        final int numberOfNeighbors = 6;
-        Node[] neighbors = new Node[numberOfNeighbors];
-        neighbors[0] = board[node.getRow() - 1][node.getColumn()];
-        neighbors[1] = board[node.getRow()][node.getColumn() + 1];
-        neighbors[2] = board[node.getRow()][node.getColumn() - 1];
-        neighbors[3] = board[node.getRow() + 1][node.getColumn()];
-        neighbors[4] = board[node.getRow() + 1][node.getColumn() - 1];
-        neighbors[5] = board[node.getRow() + 1][node.getColumn() + 1];
-        return neighbors;
     }
 
     // Gets index from the board while making sure it is in bounds.

@@ -11,7 +11,8 @@ public class Node implements Comparable<Node>
     // heuristics.
     // private int directionalWeight; // The sum of weight + distance
     private Node previousNode; // Parent node path
-    private Integer costToNode; // The current known cost to the node. Integer so we can set to null initially
+    private int costToNode; // The current known cost to the node. Integer so we can set to null initially
+    private boolean visited;
 
     public Node(int row, int column, int weight, int index)
     {
@@ -20,7 +21,8 @@ public class Node implements Comparable<Node>
         this.weight = weight;
         this.index = index;
         // setDistance();
-        costToNode = null;
+        costToNode = 0;
+        visited = false;
     }
 
     // private void setDistance()
@@ -32,6 +34,16 @@ public class Node implements Comparable<Node>
     // this.distance = (int) Math.sqrt(this.distance); // Give a rounded number -
     // should be ok.
     // }
+
+    public boolean isVisited()
+    {
+        return visited;
+    }
+
+    public void setVisited(boolean visited)
+    {
+        this.visited = visited;
+    }
 
     public int getRow()
     {
@@ -78,7 +90,7 @@ public class Node implements Comparable<Node>
     {
         // Nodes with weight -1 can't be accessed
         if (this.weight == -1)
-            this.costToNode = null;
+            this.costToNode = 500;
         else
             this.costToNode = costToNode;
     }
