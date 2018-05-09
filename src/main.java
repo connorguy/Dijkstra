@@ -53,7 +53,7 @@ public class main
         fillHexArray(input);
 
         // For Testing the fill of the board
-        testCase();
+        testCase(); // Just prints out the board
         // ----------------(For testing)----------------
         
         // Starting node is in the bottom left of the board
@@ -211,6 +211,7 @@ public class main
         }
     }
 
+
     /**
      * Starting at the given end node we work our way back and add up our total
      * weight.
@@ -283,6 +284,7 @@ public class main
         }
     }
 
+
     /**
      * Calls the nodeCheck method on all neighbors of odd indexed nodes based around
      * the hexagonal layout of the board.
@@ -300,6 +302,7 @@ public class main
         checkNode(getIndex(node.getRow() + 1, node.getColumn()), node);
     }
 
+
     /**
      * Calls the nodeCheck method on all neighbors of even indexed nodes based
      * around the hexagonal layout of the board.
@@ -316,6 +319,7 @@ public class main
         checkNode(getIndex(node.getRow() + 1, node.getColumn() - 1), node);
         checkNode(getIndex(node.getRow() + 1, node.getColumn() + 1), node);
     }
+
 
     /**
      * Checks the given node against the previous node and either sets a new smaller
