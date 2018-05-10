@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
@@ -15,7 +13,6 @@ import java.util.Scanner;
 public class main
 {
     static Node[][] board;
-    static List<Node> closedNodes;
     static Comparator<Node> nodeCompare;
     static PriorityQueue<Node> openNodes;
     final static int ROW_SIZE = 16;
@@ -33,8 +30,6 @@ public class main
     {
         // Array 31 rows, 15 columns that contain our organized nodes
         board = new Node[ROW_SIZE][COLUMN_SIZE];
-        // List for the nodes that have been fully checked
-        closedNodes = new ArrayList<Node>();
         // Create a priority que for open node list
         nodeCompare = new NodeComparator();
         openNodes = new PriorityQueue<Node>(233, nodeCompare);
@@ -50,11 +45,10 @@ public class main
         // // if (i % 3 == 0)
         // // input[i] = -1;
         // }
+        // ----------------(For testing)----------------
         fillHexArray(input);
 
-        // For Testing the fill of the board
         testCase(); // Just prints out the board
-        // ----------------(For testing)----------------
         
         // Starting node is in the bottom left of the board
         Node startingNode = board[15][0];
@@ -231,11 +225,9 @@ public class main
         {
             // print the index we are at.
             System.out.println(pathNode.getIndex() + " ");
-            // Add this nodes weight to the total weight. I THINK THIS CAN JUST BE OUR END
-            // NODE DISTANCE
-            // totalWeight = totalWeight + pathNode.getWeight();
             pathNode = pathNode.getPreviousNode();
         }
+        // Have to add the weight of the last node in the path.
         totalWeight = pathNode.getWeight() + endNode.getCostToNode();
         System.out.println(pathNode.getIndex());
         System.out.println("Total weight: " + totalWeight);
@@ -260,7 +252,6 @@ public class main
         {
             Node finishedNode = openNodes.poll();
             checkNeighbors(finishedNode);
-            closedNodes.add(finishedNode);
         }
 
     }
